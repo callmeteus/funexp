@@ -1,6 +1,7 @@
 // /I'm a (furry|brony)/
 
-literal="I'm a "
+literal|I'm a
+space
 
 group
     alternative

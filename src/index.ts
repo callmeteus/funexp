@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import Lexer from "./core/Lexer";
+import Converter from "./core/Converter";
 
 export = {
     /**
@@ -8,7 +8,7 @@ export = {
      * @returns 
      */
     parse(source: string): RegExp {
-        return new RegExp((new Lexer(source)).lex());
+        return new RegExp((new Converter(source)).lex());
     },
 
     /**
@@ -17,7 +17,7 @@ export = {
      * @returns 
      */
     parseAsString(source: string): string {
-        return (new Lexer(source)).lex();
+        return (new Converter(source)).lex();
     },
 
 

@@ -7,7 +7,7 @@ export class RegExpError extends Error {
     }
 }
 
-export default class Lexer {
+export default class Converter {
     private regexp: string = "";
     private flags: string = "";
 
@@ -84,20 +84,28 @@ export default class Lexer {
                         }
                     break;
 
-                    // If it's a literal string
+                    // If it's a literal, string or space
                     case "literal":
                     case "string":
+                    case "space":
                         // If it's an optional attribute, we convert it
                         // into a group and mark it as optional
                         if (attributes.optional !== undefined) {
                             result += "(";
                         }
 
-                        const content = node.block.nodes
-                            .map((node) => node.val)
-                            .join(" ")
-                                .replace(/^("|')/, "")
-                                .replace(/("|')$/, "");
+                        let content;
+
+                        // Check if it's the "space" helper tag
+                        if (node.name === "space") {
+                            content = " ";
+                        } else {
+                            content = node.block.nodes
+                                .map((node) => node.val)
+                                .join(" ")
+                                    .replace(/^("|')/, "")
+                                    .replace(/("|')$/, "");
+                        }
 
                         result += this.escapeRegExp(content);
 
