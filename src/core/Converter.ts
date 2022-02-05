@@ -11,6 +11,9 @@ export default class Converter {
     private regexp: string = "";
     private flags: string = "";
 
+    private startToken: "^" | "#" | string = "^";
+    private endToken: "$" | "#" | string = "$";
+
     constructor(
         protected source: string
     ) {
@@ -57,11 +60,19 @@ export default class Converter {
         return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     }
 
+    /**
+     * Parses an input into a RegExp string
+     * @param input The input AST or node array
+     * @param process If can save the process into the converter RegExp
+     * @returns 
+     */
     private parse(input: PugAST | PugNode[], process: boolean = true) {
         let result = "";
 
+        const arr = (Array.isArray(input) ? input : input.nodes);
+
         // Iterate over all nodes
-        (Array.isArray(input) ? input : input.nodes).forEach((node) => {
+        arr.forEach((node) => {
             // Check if it's a tag
             if (node.type === "Tag") {
                 // Parse all attrs into an object
@@ -82,6 +93,26 @@ export default class Converter {
                         } else {
                             this.flags = node.attrs.map((attr) => attr.name).join("");
                         }
+                    break;
+
+                    // If it's a start
+                    case "start":
+                        // A start is only allowed in the start of the regexp, duh
+                        if (this.regexp.length > 0) {
+                            throw this.makeError("Start modifier can only be present at the start of the document.");
+                        }
+
+                        result += this.startToken;
+                    break;
+
+                    // If it's an end
+                    case "end":
+                        // If has any more nodes to be parsed
+                        if (arr.indexOf(node) !== arr.length - 1) {
+                            throw this.makeError("End modifier can only be present at the end of the document.");
+                        }
+
+                        result += this.endToken;
                     break;
 
                     // If it's a literal, string or space
