@@ -110,7 +110,7 @@ This section will be moved to a dedicated page in the future.
 You can use funexp directly from your code:
 
 ```javascript
-const funexp = require("funexp");
+const funexp = require("@funexp/interpreter");
 
 const regex = funexp.parse(/*fun*/`
 literal|I love to use
