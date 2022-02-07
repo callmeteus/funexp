@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A fun and functional way to write regular expressions (RegExp)",
   "main": "out/",
+  "repository": "https://github.com/theprometeus/funexp",
   "author": "Matheus Giovani <matheus@ad3com.com.br>",
   "license": "AGPL-3.0",
   "private": false,

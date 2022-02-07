@@ -1,0 +1,15 @@
+{
+  "name": "@funexp/webpack-loader",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "repository": "https://github.com/theprometeus/funexp",
+  "author": "Matheus Giovani <matheus@ad3com.com.br>",
+  "license": "AGPL-3.0",
+  "private": false,
+  "scripts": {
+    "test": "cd test && webpack"
+  },
+  "devDependencies": {
+    "webpack": "^5.68.0"
+  }
+}

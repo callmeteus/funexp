@@ -1,7 +1,7 @@
 # funexp
 A fun and functional way to write regular expressions (RegExp).
 
-FunExp is a useful tool for larger projects that depends on RegExp to do heavy work. It can speed up the learning process of a new person that is envolved with the project, or just make RegExp easily readable.
+FunExp is a useful tool focused in maintainability for larger projects that depends on RegExp to do heavy work. It can speed up the learning process of a new person that is envolved with the project, or just make RegExp easily readable.
 It has a fast learning curve (faster than RegExp itself) and can be integrated with any language that supports regular expressions.
 
 ## Documentation
@@ -112,7 +112,7 @@ You can use funexp directly from your code:
 ```javascript
 const funexp = require("funexp");
 
-const regex = funexp.parse(`
+const regex = funexp.parse(/*fun*/`
 literal|I love to use
 space
 group(name="choice")
