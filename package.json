@@ -1,5 +1,5 @@
 {
-  "name": "funexp",
+  "name": "@funexp/interpreter",
   "version": "1.0.0",
   "description": "A fun and functional way to write regular expressions (RegExp)",
   "main": "out/",

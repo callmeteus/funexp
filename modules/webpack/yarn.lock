@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@funexp/interpreter@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@funexp/interpreter/-/interpreter-1.0.0.tgz#148b9daf358bbcdcee7c8d3a02d6ddc63820c284"
+  integrity sha512-faNoPtc/79Ad2Axy7PBHF3EyQ/lQSKntAI/V8MURBG8f1ASUoV+dW/lixCdoBPs8+EI2aB+yQfL1uwMEXLj1Dg==
+
 "@types/eslint-scope@^3.7.0":
   version "3.7.3"
   resolved "https://registry.yarnpkg.com/@types/eslint-scope/-/eslint-scope-3.7.3.tgz#125b88504b61e3c8bc6f870882003253005c3224"

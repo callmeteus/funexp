@@ -1,4 +1,4 @@
-var funexp = require("funexp");
+var funexp = require("@funexp/interpreter");
 
 /**
  * @typedef {{
