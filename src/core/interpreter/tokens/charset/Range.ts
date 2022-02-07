@@ -1,7 +1,10 @@
 import { InterpreterToken, TokenProperties } from "../../../../model/interpreter/Token";
 import CharsetInterpreterToken from "../Charset";
 
-export default class RangeCharsetInterpreterToken extends InterpreterToken {
+export default class RangeCharsetInterpreterToken extends InterpreterToken<{
+    from: string,
+    to: string
+}> {
     public static Properties: TokenProperties = {
         name: "range",
         attributes: [

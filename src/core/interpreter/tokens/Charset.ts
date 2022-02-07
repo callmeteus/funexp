@@ -1,6 +1,9 @@
 import { InterpreterToken, TokenProperties } from "../../../model/interpreter/Token";
 
-export default class CharsetInterpreterToken extends InterpreterToken {
+export default class CharsetInterpreterToken extends InterpreterToken<{
+    and?: boolean,
+    or?: boolean
+}> {
     public static Properties: TokenProperties = {
         name: "charset",
         attributes: [

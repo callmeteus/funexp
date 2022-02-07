@@ -1,6 +1,8 @@
 import { InterpreterToken, TokenProperties } from "../../../model/interpreter/Token";
 
-export default class LiteralInterpreterToken extends InterpreterToken {
+export default class LiteralInterpreterToken extends InterpreterToken<{
+    optional?: boolean
+}> {
     public static Properties: TokenProperties = {
         name: ["literal", "string", "space"],
         attributes: [

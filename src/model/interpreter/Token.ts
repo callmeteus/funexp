@@ -1,6 +1,12 @@
 import { PugNode } from "pug-parser";
 import Interpreter from "../../core/Interpreter";
 
+export type TokenAttributes = {
+    name: string,
+    type: "string" | "number" | "boolean",
+    required?: boolean
+}[];
+
 export interface TokenProperties {
     /**
      * The token name (tag) used to identify the token
@@ -11,11 +17,7 @@ export interface TokenProperties {
      * The token attributes
      * Defaults to false
      */
-    attributes?: {
-        name: string,
-        type: "string" | "number" | "boolean",
-        required?: boolean
-    }[];
+    attributes?: TokenAttributes;
 
     /**
      * If the token can have a body
@@ -25,7 +27,7 @@ export interface TokenProperties {
     canHaveBody?: boolean;
 }
 
-export abstract class InterpreterToken {
+export abstract class InterpreterToken<TAttributes = {}> {
     /**
      * The token properties
      */
@@ -49,7 +51,7 @@ export abstract class InterpreterToken {
         return typeof this.Properties.name === "string" ? this.Properties.name : this.Properties.name[0];
     }
 
-    protected attributes: Record<string, string | boolean | number>;
+    protected attributes: TAttributes;
 
     constructor(
         /**
@@ -69,7 +71,7 @@ export abstract class InterpreterToken {
             /**
              * The parent token
              */
-            parent?: InterpreterToken;
+            parent?: InterpreterToken<TAttributes>;
 
             /**
              * The input array related to this token
@@ -81,7 +83,7 @@ export abstract class InterpreterToken {
 
         if (attributes) {
             // Parse the attributes
-            this.attributes = attributes.reduce<Record<string, string | boolean | number>>((prev, curr) => {
+            this.attributes = attributes.reduce<Record<string, any>>((prev, curr) => {
                 // Try finding a value for the given attribute name
                 const value = node.attrs.find((node) => node.name === curr.name)?.val;
 
@@ -103,7 +105,7 @@ export abstract class InterpreterToken {
                 }
 
                 return prev;
-            }, {});
+            }, {}) as any as TAttributes;
         }
     }
 
@@ -134,7 +136,7 @@ export abstract class InterpreterToken {
              * @param token The token class that the parent token needs to extend
              * @returns 
              */
-            parentsWith(token: typeof InterpreterToken, message: string = "This tags needs to have a parent \"${token.getName()\" tag.") {
+            parentsWith(token: { new(...args: any[]): InterpreterToken<any> }, message: string = "This tags needs to have a parent \"${token.getName()\" tag.") {
                 return self.assert(!(self.data.parent instanceof token), `${message}`);
             }
         };

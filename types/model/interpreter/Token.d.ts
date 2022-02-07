@@ -1,5 +1,10 @@
 import { PugNode } from "pug-parser";
 import Interpreter from "../../core/Interpreter";
+export declare type TokenAttributes = {
+    name: string;
+    type: "string" | "number" | "boolean";
+    required?: boolean;
+}[];
 export interface TokenProperties {
     /**
      * The token name (tag) used to identify the token
@@ -9,11 +14,7 @@ export interface TokenProperties {
     * The token attributes
     * Defaults to false
     */
-    attributes?: {
-        name: string;
-        type: "string" | "number" | "boolean";
-        required?: boolean;
-    }[];
+    attributes?: TokenAttributes;
     /**
      * If the token can have a body
      * Useful if the token doesn't accept a body
@@ -21,7 +22,7 @@ export interface TokenProperties {
      */
     canHaveBody?: boolean;
 }
-export declare abstract class InterpreterToken {
+export declare abstract class InterpreterToken<TAttributes = {}> {
     /**
      * The node related to this token
      */
@@ -37,7 +38,7 @@ export declare abstract class InterpreterToken {
         /**
          * The parent token
          */
-        parent?: InterpreterToken;
+        parent?: InterpreterToken<TAttributes>;
         /**
          * The input array related to this token
          */
@@ -58,7 +59,7 @@ export declare abstract class InterpreterToken {
      * @returns
      */
     static getName(): string;
-    protected attributes: Record<string, string | boolean | number>;
+    protected attributes: TAttributes;
     constructor(
     /**
      * The node related to this token
@@ -75,7 +76,7 @@ export declare abstract class InterpreterToken {
         /**
          * The parent token
          */
-        parent?: InterpreterToken;
+        parent?: InterpreterToken<TAttributes>;
         /**
          * The input array related to this token
          */
@@ -99,7 +100,7 @@ export declare abstract class InterpreterToken {
          * @param token The token class that the parent token needs to extend
          * @returns
          */
-        parentsWith(token: typeof InterpreterToken, message?: string): void;
+        parentsWith(token: new (...args: any[]) => InterpreterToken<any>, message?: string): void;
     };
     /**
      * Retrieves the node name related to this token

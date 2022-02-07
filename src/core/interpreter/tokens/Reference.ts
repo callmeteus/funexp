@@ -1,6 +1,8 @@
 import { InterpreterToken, TokenProperties } from "../../../model/interpreter/Token";
 
-export default class ReferenceInterpreterToken extends InterpreterToken {
+export default class ReferenceInterpreterToken extends InterpreterToken<{
+    group?: string
+}> {
     public static Properties: TokenProperties = {
         name: "reference",
         attributes: [
