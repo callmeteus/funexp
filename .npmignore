@@ -9,3 +9,4 @@ node_modules
 modules/
 .local
 jest.config.js
+.vscode

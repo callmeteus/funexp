@@ -105,7 +105,7 @@ export declare abstract class InterpreterToken {
      * Retrieves the node name related to this token
      * @returns
      */
-    protected getNodeName(): any;
+    protected getNodeName(): string;
     /**
      * Retrieves the class related to this token
      * @returns

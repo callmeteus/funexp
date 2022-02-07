@@ -1,8 +1,6 @@
 import { InterpreterToken, TokenProperties } from "../../../model/interpreter/Token";
-export default class QuantifierInterpreterToken extends InterpreterToken {
-    private static QuantifierRegex;
+export default class LazyInterpreterToken extends InterpreterToken {
     static Properties: TokenProperties;
-    private quantifier;
     validate(): void;
     parse(): string;
 }

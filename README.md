@@ -142,6 +142,7 @@ This section will be moved to a dedicated page in the future.
 
 - **any**
     - Represents the meta (dot) operator, matches any character.
+
     - *Example:*
         ```pug
         any
@@ -160,6 +161,21 @@ This section will be moved to a dedicated page in the future.
     - Parameters:
         - **\*** - Matches zero or more times.
         - **+** - Matches one or more times.
+        - **[0-9]** - If any numbers were given (max two), it will be turned into a quantifier for the last token.
+
+    - *Example:*
+        ```pug
+        group
+            literal|abc
+            quantifier(1, 2)
+        quantifier(*)
+        ```
+
+        will be converted into
+
+        ```javascript
+        /(abc{1,2})*/
+        ```
 
 - **range**
     - Represents a range from one to another char.
@@ -216,6 +232,62 @@ This section will be moved to a dedicated page in the future.
 
         ```javascript
         /\s\S/
+        ```
+
+- **digit** or **non-digit**
+    - Represents a match against any digit (or non-digit) character.
+    - Whitespace (in Javascript) is equivalent to `[0-9]`.
+    - Non-digit (in Javascript) is equivalent to `[^0-9]`.
+    - *Example:*
+        ```pug
+        digit
+        non-digit
+        ```
+
+        will be converted into
+
+        ```javascript
+        /\d\D/
+        ```
+
+- **lazy** or **greedy**
+    - Represents a lazy or greedy match.
+    - Lazy an greedy matches will consume *as much as possible* from the previous token.
+
+    - *Example:*
+        ```pug
+        literal|i
+        space
+        group
+            literal|love
+            space
+            lazy
+        space
+        any
+        quantifier(*)
+        ```
+
+        will be converted into
+
+        ```javascript
+        /i (love?) .*/
+        ```
+
+- **reference**
+    - Represents a backreference to an existing group.
+    - Parameters:
+        - **group** - The group to be referenced. Can be either the group ID or group name (if named references are supported by the language).
+    - *Example:*
+        ```pug
+        group
+            literal|i love you!
+        reference(group=1)
+        ```
+
+        will be converted into
+
+        ```javascript
+        /(i love you)\1/
         ```
 
 ## Examples

@@ -80,7 +80,9 @@ export abstract class InterpreterToken {
         const attributes = this.getClass().Properties.attributes;
 
         if (attributes) {
+            // Parse the attributes
             this.attributes = attributes.reduce<Record<string, string | boolean | number>>((prev, curr) => {
+                // Try finding a value for the given attribute name
                 const value = node.attrs.find((node) => node.name === curr.name)?.val;
 
                 if (curr.required === true && value === undefined) {
@@ -91,8 +93,7 @@ export abstract class InterpreterToken {
                     if (curr.type === "string") {
                         prev[curr.name] = String(value)
                             .trim()
-                                .replace(/^\s*["']/g, "")
-                                .replace(/\s*["']$/g, "");
+                                .replace(/^\s*["'](.+?)["']/g, "$1");
                     } else
                     if (curr.type === "boolean") {
                         prev[curr.name] = Boolean(value);

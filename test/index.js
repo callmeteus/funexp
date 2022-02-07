@@ -3,7 +3,7 @@ const glob = require("glob");
 const funexp = require("../out");
 const assert = require("assert");
 
-require("debug").enable("funexp:*");
+//require("debug").enable("funexp:*");
 
 const tests = glob.sync(__dirname + "/**/*.fun");
 

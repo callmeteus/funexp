@@ -1,14 +1,18 @@
 import PugLexer from "pug-lexer";
 import PugParser, { PugAST, PugNode } from "pug-parser";
-import { InterpreterToken } from "../model/interpreter/Token";
+import type { InterpreterToken } from "../model/interpreter/Token";
+
 import AlternativeInterpreterToken from "./interpreter/tokens/Alternative";
 import AnyInterpreterToken from "./interpreter/tokens/Any";
 import CharsetInterpreterToken from "./interpreter/tokens/Charset";
 import RangeCharsetInterpreterToken from "./interpreter/tokens/charset/Range";
+import DigitAndNonDigitInterpreterToken from "./interpreter/tokens/DigitAndNonDigit";
 import GroupInterpreterToken from "./interpreter/tokens/Group";
+import LazyInterpreterToken from "./interpreter/tokens/Lazy";
 import LiteralInterpreterToken from "./interpreter/tokens/Literal";
 import ModInterpreterToken from "./interpreter/tokens/Mod";
 import QuantifierInterpreterToken from "./interpreter/tokens/Quantifier";
+import ReferenceInterpreterToken from "./interpreter/tokens/Reference";
 import StartAndEndInterpreterToken from "./interpreter/tokens/StartAndEnd";
 import WhitespaceAndNonWhitespaceInterpreterToken from "./interpreter/tokens/WhitespaceAndNonWhitespace";
 import WordAndNonWordInterpreter from "./interpreter/tokens/WordAndNonWord";
@@ -43,11 +47,14 @@ export default class Interpreter {
     private static Tokens = [
         AlternativeInterpreterToken,
         AnyInterpreterToken,
+        DigitAndNonDigitInterpreterToken,
         CharsetInterpreterToken,
         GroupInterpreterToken,
+        LazyInterpreterToken,
         LiteralInterpreterToken,
         ModInterpreterToken,
         QuantifierInterpreterToken,
+        ReferenceInterpreterToken,
         StartAndEndInterpreterToken,
         WhitespaceAndNonWhitespaceInterpreterToken,
         WordAndNonWordInterpreter,

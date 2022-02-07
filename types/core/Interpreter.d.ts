@@ -1,5 +1,5 @@
 import { PugAST, PugNode } from "pug-parser";
-import { InterpreterToken } from "../model/interpreter/Token";
+import type { InterpreterToken } from "../model/interpreter/Token";
 export interface RegExpLanguage {
     name: string;
     startToken: "^" | "#" | string;
