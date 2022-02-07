@@ -22,21 +22,79 @@ export interface TokenProperties {
     canHaveBody?: boolean;
 }
 export declare abstract class InterpreterToken {
+    /**
+     * The node related to this token
+     */
     protected node: PugNode;
+    /**
+     * The interpreter instance related to this token
+     */
     protected interpreter: Interpreter;
-    protected parent?: InterpreterToken;
+    /**
+     * The token data
+     */
+    protected data: {
+        /**
+         * The parent token
+         */
+        parent?: InterpreterToken;
+        /**
+         * The input array related to this token
+         */
+        array?: PugNode[];
+    };
     /**
      * The token properties
      */
     static Properties: TokenProperties;
-    protected attributes: Record<string, string | boolean | number>;
-    constructor(node: PugNode, interpreter: Interpreter, parent?: InterpreterToken);
     /**
      * Checks if the token names matches
      * @param name The name to be checked
      * @returns
      */
-    is(name: string): boolean;
+    static is(name: string): boolean;
+    protected attributes: Record<string, string | boolean | number>;
+    constructor(
+    /**
+     * The node related to this token
+     */
+    node: PugNode, 
+    /**
+     * The interpreter instance related to this token
+     */
+    interpreter: Interpreter, 
+    /**
+     * The token data
+     */
+    data?: {
+        /**
+         * The parent token
+         */
+        parent?: InterpreterToken;
+        /**
+         * The input array related to this token
+         */
+        array?: PugNode[];
+    });
+    protected get asserts(): {
+        /**
+         * Asserts that the token has no body contents
+         * @param message An optional error message
+         * @returns
+         */
+        hasNoBody(message?: string): void;
+        /**
+         * Asserts that the token has body contents
+         * @param message An optional error message
+         * @returns
+         */
+        hasBody(message?: string): void;
+    };
+    /**
+     * Retrieves the node name related to this token
+     * @returns
+     */
+    protected getNodeName(): any;
     /**
      * Retrieves the class related to this token
      * @returns

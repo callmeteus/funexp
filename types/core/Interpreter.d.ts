@@ -1,29 +1,57 @@
 import { PugAST, PugNode } from "pug-parser";
-export declare class RegExpError extends Error {
+import { InterpreterToken } from "../model/interpreter/Token";
+export interface RegExpLanguage {
+    name: string;
+    startToken: "^" | "#" | string;
+    endToken: "$" | "#" | string;
+}
+export interface InterpreterOptions {
+    fileName?: string;
+}
+export declare class RegExpInterpretationError extends Error {
+    line?: number;
+    column?: number;
+    fileName?: string;
     constructor(message: string);
 }
 export default class Interpreter {
     protected source: string;
+    protected options?: InterpreterOptions;
     /**
      * All tokens used by the interpreter
      */
     private static Tokens;
     private regexp;
     private flags;
-    private startToken;
-    private endToken;
-    constructor(source: string);
-    makeError(message: string, node?: PugNode): RegExpError;
+    constructor(source: string, options?: InterpreterOptions);
+    getLanguage(): RegExpLanguage;
+    /**
+     * Creates a RegExp interpretation error
+     * @param message The error message
+     * @param node The node related to this error
+     * @returns
+     */
+    makeError(message: string, node?: PugNode): RegExpInterpretationError;
     /**
      * Converts the source into a RegExp
      * @returns
      */
     lex(): string;
     /**
-     * Parses an input into a RegExp string
-     * @param input The input AST or node array
-     * @param process If can save the process into the converter RegExp
+     * Checks if the interpreter already has any result
      * @returns
      */
-    parse(input: PugAST | PugNode[], process?: boolean): string;
+    hasResult(): boolean;
+    /**
+     * Sets the resulting RegExp flags
+     * @param flags The new flags to be set
+     */
+    setFlags(flags: string[] | string): void;
+    /**
+     * Parses an input into a RegExp string
+     * @param input The input AST or node array
+     * @param parent The parent token related to this parsing body
+     * @returns
+     */
+    parse(input: PugAST | PugNode[], parent?: InterpreterToken): string;
 }

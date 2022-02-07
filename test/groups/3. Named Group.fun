@@ -3,5 +3,5 @@
 literal|my name is 
 
 group(name="name")
-	meta(.)
+	any
 	quantifier(+)

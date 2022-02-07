@@ -1,5 +1,5 @@
 {
-	"fileTypes": [ "fun" ],
+	"fileTypes": ["fun"],
 	"name": "Pug",
 	"patterns": [
 	  {
@@ -166,8 +166,6 @@
 			"name": "invalid.illegal.name.tag.fun"
 		  },
 		  { "include": "#tag_name" },
-		  { "include": "#tag_id" },
-		  { "include": "#tag_classes" },
 		  { "include": "#tag_attributes" },
 		  {
 			"match": "((\\.)\\s+$)|((:)\\s*$)",
@@ -198,15 +196,6 @@
 			]
 		  }
 		]
-	  },
-	  "tag_id": {
-		"match": "#[\\w-]+",
-		"name": "entity.other.attribute-name.id.fun"
-	  },
-	  "tag_classes": {
-		"match": "\\.([^\\w-])?[\\w-]*",
-		"captures": { "1": { "name": "invalid.illegal.tag.fun" } },
-		"name": "entity.other.attribute-name.class.fun"
 	  },
 	  "tag_attributes": {
 		"begin": "(\\(\\s*)",
@@ -303,8 +292,6 @@
 			"name": "tag.inline.fun",
 			"patterns": [
 			  { "include": "#tag_name" },
-			  { "include": "#tag_id" },
-			  { "include": "#tag_classes" },
 			  { "include": "#tag_attributes" },
 			  { "include": "#inline_pug" },
 			  {

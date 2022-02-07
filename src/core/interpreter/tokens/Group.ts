@@ -2,7 +2,7 @@ import { InterpreterToken, TokenProperties } from "../../../model/interpreter/To
 
 export default class GroupInterpreterToken extends InterpreterToken {
     public static Properties: TokenProperties = {
-        name: ["group"],
+        name: "group",
         attributes: [
             {
                 name: "optional",
@@ -17,7 +17,7 @@ export default class GroupInterpreterToken extends InterpreterToken {
 
     public validate() {
         super.validate();
-        this.assert(this.hasBody(), "Group tokens needs to have a body.");
+        this.asserts.hasBody();
     }
 
     public parse() {
@@ -34,7 +34,7 @@ export default class GroupInterpreterToken extends InterpreterToken {
             }
         }
 
-        result += this.interpreter.parse(this.node.block, false);
+        result += this.interpreter.parse(this.node.block, this);
         result += ")";
 
         if (this.attributes.optional !== undefined && !!Boolean(this.attributes.optional)) {

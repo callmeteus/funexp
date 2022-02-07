@@ -31,43 +31,98 @@ export abstract class InterpreterToken {
      */
     public static Properties: TokenProperties;
 
-    protected attributes: Record<string, string | boolean | number>;
-
-    constructor(
-        protected node: PugNode,
-        protected interpreter: Interpreter,
-        protected parent?: InterpreterToken
-    ) {
-        const attributes = this.getClass().Properties.attributes;
-
-        this.attributes = attributes.reduce<Record<string, string | boolean | number>>((prev, curr) => {
-            const value = node.attrs.find((node) => node.name === curr.name)?.val;
-
-            if (curr.required === true && value === undefined) {
-                throw this.interpreter.makeError("Attribute \"" + curr.name + "\" is required.", this.node);
-            }
-
-            if (curr.type === "string") {
-                prev[curr.name] = String(value);
-            } else
-            if (curr.type === "boolean") {
-                prev[curr.name] = Boolean(value);
-            } else {
-                prev[curr.name] = Number(value);
-            }
-
-            return prev;
-        }, {});
-    }
-
     /**
      * Checks if the token names matches
      * @param name The name to be checked
      * @returns 
      */
-    public is(name: string) {
-        const tokenName = this.getClass().Properties.name;
+    public static is(name: string) {
+        const tokenName = this.Properties.name;
         return (Array.isArray(tokenName) ? tokenName : [tokenName]).includes(name);
+    }
+
+    protected attributes: Record<string, string | boolean | number>;
+
+    constructor(
+        /**
+         * The node related to this token
+         */
+        protected node: PugNode,
+
+        /**
+         * The interpreter instance related to this token
+         */
+        protected interpreter: Interpreter,
+
+        /**
+         * The token data
+         */
+        protected data: {
+            /**
+             * The parent token
+             */
+            parent?: InterpreterToken;
+
+            /**
+             * The input array related to this token
+             */
+            array?: PugNode[]
+        } = {}
+    ) {
+        const attributes = this.getClass().Properties.attributes;
+
+        if (attributes) {
+            this.attributes = attributes.reduce<Record<string, string | boolean | number>>((prev, curr) => {
+                const value = node.attrs.find((node) => node.name === curr.name)?.val;
+
+                if (curr.required === true && value === undefined) {
+                    throw this.interpreter.makeError("Attribute \"" + curr.name + "\" is required.", this.node);
+                }
+
+                if (curr.type === "string") {
+                    prev[curr.name] = String(value);
+                } else
+                if (curr.type === "boolean") {
+                    prev[curr.name] = Boolean(value);
+                } else {
+                    prev[curr.name] = Number(value);
+                }
+
+                return prev;
+            }, {});
+        }
+    }
+
+    protected get asserts() {
+        const self = this;
+
+        return {
+            /**
+             * Asserts that the token has no body contents
+             * @param message An optional error message
+             * @returns 
+             */
+            hasNoBody(message: string = "This tag doesn't support having body contents.") {
+                return self.assert(self.hasBody(), message);
+            },
+
+            /**
+             * Asserts that the token has body contents
+             * @param message An optional error message
+             * @returns 
+             */
+            hasBody(message: string = "This tag needs to have body contents.") {
+                return self.assert(!self.hasBody(), message);
+            }
+        };
+    }
+
+    /**
+     * Retrieves the node name related to this token
+     * @returns 
+     */
+    protected getNodeName() {
+        return this.node.name;
     }
 
     /**

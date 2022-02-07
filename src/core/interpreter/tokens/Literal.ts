@@ -12,7 +12,7 @@ export default class LiteralInterpreterToken extends InterpreterToken {
     };
 
     public validate() {
-        this.assert(this.hasBody(), "Literal tokens can't have a body.");
+        super.validate();
     }
 
     public parse() {

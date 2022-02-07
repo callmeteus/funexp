@@ -95,8 +95,8 @@ This section will be moved to a dedicated page in the future.
         /I believe in pugs|fun/
         ```
 
-- **meta**
-    - Represents the meta operator (dot).
+- **any**
+    - Represents the meta (dot) operator, matches any character.
 
 - **quantifier**
     - Represents a quantifier, used to repeat a match.

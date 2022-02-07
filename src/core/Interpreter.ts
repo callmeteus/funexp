@@ -1,9 +1,31 @@
 import PugLexer from "pug-lexer";
 import PugParser, { PugAST, PugNode } from "pug-parser";
+import { InterpreterToken } from "../model/interpreter/Token";
+import AlternativeInterpreterToken from "./interpreter/tokens/Alternative";
+import AnyInterpreterToken from "./interpreter/tokens/Any";
 import GroupInterpreterToken from "./interpreter/tokens/Group";
 import LiteralInterpreterToken from "./interpreter/tokens/Literal";
+import ModInterpreterToken from "./interpreter/tokens/Mod";
+import QuantifierInterpreterToken from "./interpreter/tokens/Quantifier";
+import StartAndEndInterpreterToken from "./interpreter/tokens/StartAndEnd";
 
-export class RegExpError extends Error {
+const debug = require("debug")("funexp:interpreter");
+
+export interface RegExpLanguage {
+    name: string;
+    startToken: "^" | "#" | string;
+    endToken: "$" | "#" | string;
+}
+
+export interface InterpreterOptions {
+    fileName?: string
+}
+
+export class RegExpInterpretationError extends Error {
+    public line?: number;
+    public column?: number;
+    public fileName?: string;
+
     constructor(message: string) {
         super(message);
     }
@@ -14,38 +36,64 @@ export default class Interpreter {
      * All tokens used by the interpreter
      */
     private static Tokens = [
+        AlternativeInterpreterToken,
+        AnyInterpreterToken,
+        GroupInterpreterToken,
         LiteralInterpreterToken,
-        GroupInterpreterToken
+        ModInterpreterToken,
+        QuantifierInterpreterToken,
+        StartAndEndInterpreterToken
     ];
 
     private regexp: string = "";
     private flags: string = "";
 
-    private startToken: "^" | "#" | string = "^";
-    private endToken: "$" | "#" | string = "$";
-
     constructor(
-        protected source: string
+        protected source: string,
+        protected options?: InterpreterOptions
     ) {
         
     }
 
+    public getLanguage(): RegExpLanguage {
+        return {
+            name: "javascript",
+            startToken: "^",
+            endToken: "$"
+        };
+    }
+
+    /**
+     * Creates a RegExp interpretation error
+     * @param message The error message
+     * @param node The node related to this error
+     * @returns 
+     */
     public makeError(message: string, node?: PugNode) {
+        const error = new RegExpInterpretationError(message);
+
         if (node?.start && node?.end) {
-            message += `\nStart: ${node.start}, end: ${node.end}.`;
+            error.message += `\nStart: ${node.start}, end: ${node.end}.`;
         }
 
         if (node?.line) {
-            message += ` on line ${node.line}`;
+            error.line = node.line;
         }
 
         if (node?.line && node?.column) {
             const source = this.source.split(/[\n]/)[node?.line - 1];
-            message += "\n\n" + source;
-            message += "\n" + "-".repeat(node?.column) + "^";
+            error.message += "\n\t" + source;
+            error.message += "\n\t" + "-".repeat(node?.column - 1) + "^";
+
+            error.line = node.line;
+            error.column = node.column;
         }
 
-        return new RegExpError(message);
+        if (this.options?.fileName) {
+            error.fileName = this.options.fileName;
+        }
+
+        return error;
     }
 
     /**
@@ -62,12 +110,28 @@ export default class Interpreter {
     }
 
     /**
-     * Parses an input into a RegExp string
-     * @param input The input AST or node array
-     * @param process If can save the process into the converter RegExp
+     * Checks if the interpreter already has any result
      * @returns 
      */
-    public parse(input: PugAST | PugNode[], process: boolean = true) {
+    public hasResult() {
+        return this.regexp.length > 0;
+    }
+
+    /**
+     * Sets the resulting RegExp flags
+     * @param flags The new flags to be set
+     */
+    public setFlags(flags: string[]|string) {
+        this.flags = Array.isArray(flags) ? flags.join("") : flags;
+    }
+
+    /**
+     * Parses an input into a RegExp string
+     * @param input The input AST or node array
+     * @param parent The parent token related to this parsing body
+     * @returns 
+     */
+    public parse(input: PugAST | PugNode[], parent?: InterpreterToken) {
         let result = "";
 
         const arr = (Array.isArray(input) ? input : input.nodes);
@@ -77,84 +141,35 @@ export default class Interpreter {
             // Check if it's a tag
             if (node.type === "Tag") {
                 for(let Token of Interpreter.Tokens) {
-                    const token = new Token(node, this);
-
-                    if (!token.is(node.name)) {
+                    if (!Token.is(node.name)) {
+                        debug("\"%s\" doesn't match with %O", node.name, Token.Properties.name);
                         continue;
                     }
 
-                    // Parse the token and prevent from continueing
+                    debug("found token \"%s\" for tag \"%s\"", Token.Properties.name, node.name);
+
+                    // Create a new token instance
+                    const token = new Token(node, this, {
+                        array: arr,
+                        parent
+                    });
+
+                    token.validate();
+
+                    // Parse the token and break the loop
                     result += token.parse();
+
+                    debug("regexp result expanded to \"%s\"", result);
+
                     return;
                 }
 
-                switch(node.name) {
-                    default:
-                        throw this.makeError("Unknown operator \"" + node.name + "\"", node);
-
-                    // If it's a modifier
-                    case "mod":
-                        // Modifiers are not allowed outside of the document top
-                        if (this.regexp.length > 0) {
-                            throw this.makeError("Expression modifiers can only be present at the top of the document.");
-                        } else {
-                            const modifiers = {
-                                global: "g",
-                                "multi-line": "m"
-                            } as const;
-
-                            this.flags = node.attrs.map((attr) => modifiers[attr.name as keyof typeof modifiers]).join("");
-                        }
-                    break;
-
-                    // If it's a start
-                    case "start":
-                        // A start is only allowed in the start of the regexp, duh
-                        if (this.regexp.length > 0) {
-                            throw this.makeError("Start modifier can only be present at the start of the document.");
-                        }
-
-                        result += this.startToken;
-                    break;
-
-                    // If it's an end
-                    case "end":
-                        // If has any more nodes to be parsed
-                        if (arr.indexOf(node) !== arr.length - 1) {
-                            throw this.makeError("End modifier can only be present at the end of the document.");
-                        }
-
-                        result += this.endToken;
-                    break;
-
-                    // If it's a meta operator (".")
-                    case "meta":
-                        const meta = node.attrs.map((attr) => attr.name).join("").trim();
-                        result += meta;
-                    break;
-
-                    // If it's a quantifier (* or +)
-                    case "quantifier":
-                        const quantifier = node.attrs.map((attr) => attr.name).join("").trim();
-
-                        if (!["*", "+"].includes(quantifier)) {
-                            throw this.makeError("Invalid quantifier \"" + quantifier + "\"", node);
-                        }
-
-                        result += quantifier;
-                    break;
-
-                    // If it's an alternative / or (|)
-                    case "alternative":
-                        const block = node.block.nodes.map((node) => this.parse([node], false));
-                        
-                        result += block.join("|");
-                    break;
-                }
+                // If we made into here, it surely is an unknown tag
+                throw this.makeError("Unknown tag \"" + node.name + "\"");
             }
         });
 
-        if (process) {
+        if (!parent) {
             this.regexp += result;
             return this.regexp;
         }
