@@ -11,6 +11,6 @@ export default class WordAndNonWordInterpreterToken extends InterpreterToken {
     }
 
     public parse() {
-        return "\\" + this.node.name === "word" ? "w" : "W";
+        return "\\" + (this.node.name === "word" ? "w" : "W");
     }
 }

@@ -35,6 +35,6 @@ export default class RangeCharsetInterpreterToken extends InterpreterToken {
     }
 
     public parse() {
-        return "[" + this.value + "]";
+        return this.value;
     }
 }

@@ -11,6 +11,6 @@ export default class WhitespaceAndNonWhitespaceInterpreterToken extends Interpre
     }
 
     public parse() {
-        return "\\" + this.node.name === "whitespace" ? "s" : "S";
+        return "\\" + (this.node.name === "whitespace" ? "s" : "S");
     }
 }

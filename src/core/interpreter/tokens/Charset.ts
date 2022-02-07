@@ -2,7 +2,17 @@ import { InterpreterToken, TokenProperties } from "../../../model/interpreter/To
 
 export default class CharsetInterpreterToken extends InterpreterToken {
     public static Properties: TokenProperties = {
-        name: "charset"
+        name: "charset",
+        attributes: [
+            {
+                name: "and",
+                type: "boolean"
+            },
+            {
+                name: "or",
+                type: "boolean"
+            }
+        ]
     };
 
     public validate() {
@@ -11,7 +21,16 @@ export default class CharsetInterpreterToken extends InterpreterToken {
         this.asserts.hasBody();
     }
 
-    public parse() {
-        return this.interpreter.parse(this.node.block.nodes, this);
+    public parse(): string {
+        let op = "";
+
+        if (this.attributes.and) {
+            op = "&";
+        } else
+        if (this.attributes.or) {
+            op = "|"
+        }
+
+        return `${op}[${this.interpreter.parse(this.node.block.nodes, this)}]`;
     }
 }

@@ -87,16 +87,18 @@ export abstract class InterpreterToken {
                     throw this.interpreter.makeError("Attribute \"" + curr.name + "\" is required.", this.node);
                 }
 
-                if (curr.type === "string") {
-                    prev[curr.name] = String(value)
-                        .trim()
-                            .replace(/^\s*["']/g, "")
-                            .replace(/\s*["']$/g, "");
-                } else
-                if (curr.type === "boolean") {
-                    prev[curr.name] = Boolean(value);
-                } else {
-                    prev[curr.name] = Number(value);
+                if (value !== undefined) {
+                    if (curr.type === "string") {
+                        prev[curr.name] = String(value)
+                            .trim()
+                                .replace(/^\s*["']/g, "")
+                                .replace(/\s*["']$/g, "");
+                    } else
+                    if (curr.type === "boolean") {
+                        prev[curr.name] = Boolean(value);
+                    } else {
+                        prev[curr.name] = Number(value);
+                    }
                 }
 
                 return prev;

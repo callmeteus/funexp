@@ -10,6 +10,7 @@ import LiteralInterpreterToken from "./interpreter/tokens/Literal";
 import ModInterpreterToken from "./interpreter/tokens/Mod";
 import QuantifierInterpreterToken from "./interpreter/tokens/Quantifier";
 import StartAndEndInterpreterToken from "./interpreter/tokens/StartAndEnd";
+import WhitespaceAndNonWhitespaceInterpreterToken from "./interpreter/tokens/WhitespaceAndNonWhitespace";
 import WordAndNonWordInterpreter from "./interpreter/tokens/WordAndNonWord";
 
 const debug = require("debug")("funexp:interpreter");
@@ -48,6 +49,7 @@ export default class Interpreter {
         ModInterpreterToken,
         QuantifierInterpreterToken,
         StartAndEndInterpreterToken,
+        WhitespaceAndNonWhitespaceInterpreterToken,
         WordAndNonWordInterpreter,
 
         /**
