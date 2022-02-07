@@ -10,13 +10,24 @@ This section will be moved to a dedicated page in the future.
 - **mod**
     - Represents a modifier. It depends on the RegExp target language.
         - Parameters:
-            - *g*
+            - *global*
                 - Don't return after first match.
-            - *m*
+            - *multi-line*
                 - `start` and `end` match start/end of line.
-            - *i*
+            - *insensitive*
                 - Case insensitive match.
             - ... and many more depending on the target language.
+        - *Example:*
+            ```pug
+            mod(global, insensitive)
+            literal|this is a case insensitive regexp
+            ```
+
+            will be converted into 
+
+            ```javascript
+            /this is a case insensitive regexp/gi
+            ```
 
 - **start** or **end**
     - Represents the start or ending of the capture.
