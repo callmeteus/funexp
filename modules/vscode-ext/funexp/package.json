@@ -1,0 +1,25 @@
+{
+    "name": "funexp",
+    "displayName": "FunExp",
+    "description": "FunExp language support.",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.64.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "fun",
+            "aliases": ["FunExp", "fun"],
+            "extensions": ["fun"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "fun",
+            "scopeName": "text.fun",
+            "path": "./syntaxes/fun.tmLanguage.json"
+        }]
+    }
+}

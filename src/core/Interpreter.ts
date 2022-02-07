@@ -1,5 +1,7 @@
 import PugLexer from "pug-lexer";
 import PugParser, { PugAST, PugNode } from "pug-parser";
+import GroupInterpreterToken from "./interpreter/tokens/Group";
+import LiteralInterpreterToken from "./interpreter/tokens/Literal";
 
 export class RegExpError extends Error {
     constructor(message: string) {
@@ -7,7 +9,15 @@ export class RegExpError extends Error {
     }
 }
 
-export default class Converter {
+export default class Interpreter {
+    /**
+     * All tokens used by the interpreter
+     */
+    private static Tokens = [
+        LiteralInterpreterToken,
+        GroupInterpreterToken
+    ];
+
     private regexp: string = "";
     private flags: string = "";
 
@@ -17,10 +27,10 @@ export default class Converter {
     constructor(
         protected source: string
     ) {
-
+        
     }
 
-    private makeError(message: string, node?: PugNode) {
+    public makeError(message: string, node?: PugNode) {
         if (node?.start && node?.end) {
             message += `\nStart: ${node.start}, end: ${node.end}.`;
         }
@@ -52,21 +62,12 @@ export default class Converter {
     }
 
     /**
-     * Escapes all RegExp operators from a string
-     * @param string The string to be escaped
-     * @returns 
-     */
-    private escapeRegExp(string: string) {
-        return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    }
-
-    /**
      * Parses an input into a RegExp string
      * @param input The input AST or node array
      * @param process If can save the process into the converter RegExp
      * @returns 
      */
-    private parse(input: PugAST | PugNode[], process: boolean = true) {
+    public parse(input: PugAST | PugNode[], process: boolean = true) {
         let result = "";
 
         const arr = (Array.isArray(input) ? input : input.nodes);
@@ -75,11 +76,17 @@ export default class Converter {
         arr.forEach((node) => {
             // Check if it's a tag
             if (node.type === "Tag") {
-                // Parse all attrs into an object
-                const attributes = node.attrs.reduce<Record<string, string>>((prev, curr) => {
-                    prev[curr.name] = curr.val;
-                    return prev;
-                }, {});
+                for(let Token of Interpreter.Tokens) {
+                    const token = new Token(node, this);
+
+                    if (!token.is(node.name)) {
+                        continue;
+                    }
+
+                    // Parse the token and prevent from continueing
+                    result += token.parse();
+                    return;
+                }
 
                 switch(node.name) {
                     default:
@@ -91,7 +98,12 @@ export default class Converter {
                         if (this.regexp.length > 0) {
                             throw this.makeError("Expression modifiers can only be present at the top of the document.");
                         } else {
-                            this.flags = node.attrs.map((attr) => attr.name).join("");
+                            const modifiers = {
+                                global: "g",
+                                "multi-line": "m"
+                            } as const;
+
+                            this.flags = node.attrs.map((attr) => modifiers[attr.name as keyof typeof modifiers]).join("");
                         }
                     break;
 
@@ -113,57 +125,6 @@ export default class Converter {
                         }
 
                         result += this.endToken;
-                    break;
-
-                    // If it's a literal, string or space
-                    case "literal":
-                    case "string":
-                    case "space":
-                        // If it's an optional attribute, we convert it
-                        // into a group and mark it as optional
-                        if (attributes.optional !== undefined) {
-                            result += "(";
-                        }
-
-                        let content;
-
-                        // Check if it's the "space" helper tag
-                        if (node.name === "space") {
-                            content = " ";
-                        } else {
-                            content = node.block.nodes
-                                .map((node) => node.val)
-                                .join(" ")
-                                    .replace(/^("|')/, "")
-                                    .replace(/("|')$/, "");
-                        }
-
-                        result += this.escapeRegExp(content);
-
-                        if (attributes.optional !== undefined) {
-                            result += ")?";
-                        }
-                    break;
-
-                    // If it's a group
-                    case "group":
-                        result += "(";
-
-                        // If has any attributes than the "optional" one
-                        if (node.attrs.filter((attr) => attr.name !== "optional").length) {
-                            result += "?";
-
-                            if (attributes.name !== undefined) {
-                                result += "<" + attributes.name.replace(/["']/g, "").trim() + ">";
-                            }
-                        }
-
-                        result += this.parse(node.block, false);
-                        result += ")";
-
-                        if (attributes.optional !== undefined && !!Boolean(attributes.optional)) {
-                            result += "?";
-                        }
                     break;
 
                     // If it's a meta operator (".")

@@ -1,0 +1,10 @@
+{
+  "name": "@funexp/vscode-ext",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "generator-code": "^1.6.7",
+    "yo": "^4.3.0"
+  }
+}

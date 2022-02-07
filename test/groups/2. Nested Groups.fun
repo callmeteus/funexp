@@ -3,9 +3,11 @@
 literal|I'm a 
 
 group
-	literal="good"
+	literal|good
 
 	group(optional=true)
-		literal=" or bad"
+		space
+		literal|or bad
 
-literal=" person"
+space
+literal|person

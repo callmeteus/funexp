@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import Converter from "./core/Converter";
+import Interpreter from "./core/Interpreter";
 
 export = {
     /**
@@ -8,7 +8,7 @@ export = {
      * @returns 
      */
     parse(source: string): RegExp {
-        return new RegExp((new Converter(source)).lex());
+        return new RegExp((new Interpreter(source)).lex());
     },
 
     /**
@@ -17,7 +17,7 @@ export = {
      * @returns 
      */
     parseAsString(source: string): string {
-        return (new Converter(source)).lex();
+        return (new Interpreter(source)).lex();
     },
 
 

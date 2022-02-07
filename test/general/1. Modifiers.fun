@@ -1,5 +1,5 @@
 // /modifiers are fun!/gm
 
-mod(gm)
+mod(global, multi-line)
 
 literal|modifiers are fun!

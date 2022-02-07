@@ -8,7 +8,7 @@
   "private": false,
   "scripts": {
     "watch": "tsc -watch",
-    "test-node": "nodemon -e js,ts,fun --ignore test/out test"
+    "test": "nodemon -e js,ts,fun --ignore test/out test"
   },
   "types": "types/index.d.ts",
   "devDependencies": {
