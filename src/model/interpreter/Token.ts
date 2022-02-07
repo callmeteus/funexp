@@ -41,6 +41,14 @@ export abstract class InterpreterToken {
         return (Array.isArray(tokenName) ? tokenName : [tokenName]).includes(name);
     }
 
+    /**
+     * Retrieves this token name
+     * @returns 
+     */
+    public static getName() {
+        return typeof this.Properties.name === "string" ? this.Properties.name : this.Properties.name[0];
+    }
+
     protected attributes: Record<string, string | boolean | number>;
 
     constructor(
@@ -80,7 +88,10 @@ export abstract class InterpreterToken {
                 }
 
                 if (curr.type === "string") {
-                    prev[curr.name] = String(value);
+                    prev[curr.name] = String(value)
+                        .trim()
+                            .replace(/^\s*["']/g, "")
+                            .replace(/\s*["']$/g, "");
                 } else
                 if (curr.type === "boolean") {
                     prev[curr.name] = Boolean(value);
@@ -113,6 +124,15 @@ export abstract class InterpreterToken {
              */
             hasBody(message: string = "This tag needs to have body contents.") {
                 return self.assert(!self.hasBody(), message);
+            },
+
+            /**
+             * Asserts that the parent token extends a given token class
+             * @param token The token class that the parent token needs to extend
+             * @returns 
+             */
+            parentsWith(token: typeof InterpreterToken, message: string = "This tags needs to have a parent \"${token.getName()\" tag.") {
+                return self.assert(!(self.data.parent instanceof token), `${message}`);
             }
         };
     }

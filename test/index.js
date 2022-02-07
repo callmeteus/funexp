@@ -5,7 +5,7 @@ const assert = require("assert");
 
 require("debug").enable("funexp:*");
 
-const tests = glob.sync("**/*.fun");
+const tests = glob.sync(__dirname + "/**/*.fun");
 
 console.info("test started");
 console.info("");

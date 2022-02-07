@@ -3,11 +3,14 @@ import PugParser, { PugAST, PugNode } from "pug-parser";
 import { InterpreterToken } from "../model/interpreter/Token";
 import AlternativeInterpreterToken from "./interpreter/tokens/Alternative";
 import AnyInterpreterToken from "./interpreter/tokens/Any";
+import CharsetInterpreterToken from "./interpreter/tokens/Charset";
+import RangeCharsetInterpreterToken from "./interpreter/tokens/charset/Range";
 import GroupInterpreterToken from "./interpreter/tokens/Group";
 import LiteralInterpreterToken from "./interpreter/tokens/Literal";
 import ModInterpreterToken from "./interpreter/tokens/Mod";
 import QuantifierInterpreterToken from "./interpreter/tokens/Quantifier";
 import StartAndEndInterpreterToken from "./interpreter/tokens/StartAndEnd";
+import WordAndNonWordInterpreter from "./interpreter/tokens/WordAndNonWord";
 
 const debug = require("debug")("funexp:interpreter");
 
@@ -15,6 +18,7 @@ export interface RegExpLanguage {
     name: string;
     startToken: "^" | "#" | string;
     endToken: "$" | "#" | string;
+    flags: Record<string, string>;
 }
 
 export interface InterpreterOptions {
@@ -38,11 +42,18 @@ export default class Interpreter {
     private static Tokens = [
         AlternativeInterpreterToken,
         AnyInterpreterToken,
+        CharsetInterpreterToken,
         GroupInterpreterToken,
         LiteralInterpreterToken,
         ModInterpreterToken,
         QuantifierInterpreterToken,
-        StartAndEndInterpreterToken
+        StartAndEndInterpreterToken,
+        WordAndNonWordInterpreter,
+
+        /**
+         * Charset
+         */
+        RangeCharsetInterpreterToken
     ];
 
     private regexp: string = "";
@@ -59,7 +70,11 @@ export default class Interpreter {
         return {
             name: "javascript",
             startToken: "^",
-            endToken: "$"
+            endToken: "$",
+            flags: {
+                global: "g",
+                "multi-line": "m"
+            }
         };
     }
 
@@ -131,7 +146,7 @@ export default class Interpreter {
      * @param parent The parent token related to this parsing body
      * @returns 
      */
-    public parse(input: PugAST | PugNode[], parent?: InterpreterToken) {
+    public parse(input: PugAST | PugNode[], parent?: InterpreterToken): string {
         let result = "";
 
         const arr = (Array.isArray(input) ? input : input.nodes);
@@ -165,7 +180,7 @@ export default class Interpreter {
                 }
 
                 // If we made into here, it surely is an unknown tag
-                throw this.makeError("Unknown tag \"" + node.name + "\"");
+                throw this.makeError("Unknown tag \"" + node.name + "\"", node);
             }
         });
 

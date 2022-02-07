@@ -4,6 +4,7 @@ export interface RegExpLanguage {
     name: string;
     startToken: "^" | "#" | string;
     endToken: "$" | "#" | string;
+    flags: Record<string, string>;
 }
 export interface InterpreterOptions {
     fileName?: string;

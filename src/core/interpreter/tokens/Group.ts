@@ -30,7 +30,7 @@ export default class GroupInterpreterToken extends InterpreterToken {
             result += "?";
 
             if (this.attributes.name !== undefined) {
-                result += "<" + (this.attributes.name as string).replace(/["']/g, "").trim() + ">";
+                result += "<" + (this.attributes.name as string).trim() + ">";
             }
         }
 

@@ -53,6 +53,11 @@ export declare abstract class InterpreterToken {
      * @returns
      */
     static is(name: string): boolean;
+    /**
+     * Retrieves this token name
+     * @returns
+     */
+    static getName(): string;
     protected attributes: Record<string, string | boolean | number>;
     constructor(
     /**
@@ -89,6 +94,12 @@ export declare abstract class InterpreterToken {
          * @returns
          */
         hasBody(message?: string): void;
+        /**
+         * Asserts that the parent token extends a given token class
+         * @param token The token class that the parent token needs to extend
+         * @returns
+         */
+        parentsWith(token: typeof InterpreterToken, message?: string): void;
     };
     /**
      * Retrieves the node name related to this token
