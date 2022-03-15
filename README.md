@@ -7,7 +7,9 @@ It has a fast learning curve (faster than RegExp itself) and can be integrated w
 ## API
 You can use funexp directly from your code:
 
-`npm i @funexp/interpreter`
+```bash
+npm i @funexp/interpreter
+```
 
 ```javascript
 const funexp = require("@funexp/interpreter");
